@@ -26,7 +26,7 @@ public class ProductsRepository extends BaseRepository {
         }
     }
 
-    public void addNewProductUnsafe(Connection connection, Product product) {
+    public void addNewProductUnsafe(Connection connection, Product product) { // подвержен SQL инъекциям
         String query = String.format("""
                 INSERT INTO %s (name, category, price, stock)
                 VALUES
@@ -41,7 +41,7 @@ public class ProductsRepository extends BaseRepository {
         }
     }
 
-    public void addNewProductSafe(Connection connection, Product product) {
+    public void addNewProductSafe(Connection connection, Product product) { // защищен от SQL инъекций
         String query = String.format("""
                 INSERT INTO %s (name, category, price, stock)
                 VALUES (?, ?, ?, ?);
