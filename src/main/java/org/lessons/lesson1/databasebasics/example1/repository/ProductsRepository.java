@@ -4,6 +4,9 @@ import org.lessons.lesson1.databasebasics.example1.models.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductsRepository extends BaseRepository {
     private final String TABLE_NAME = "products";
@@ -56,6 +59,107 @@ public class ProductsRepository extends BaseRepository {
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.printf("Данные были успешно записаны в таблицу %s\n", TABLE_NAME);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Product> getAllProducts(Connection conn) {
+        List<Product> products = new ArrayList<>();
+
+        String query = String.format("SELECT * FROM %s", TABLE_NAME);
+
+        try {
+            ResultSet resultSet = executeQuery(conn, query);
+            while (resultSet.next()) {
+                products.add(
+                        new Product(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("category"),
+                                resultSet.getDouble("price"),
+                                resultSet.getInt("stock")
+                        )
+                );
+            }
+            System.out.printf("Данные успешно получены из таблицы %s\n", TABLE_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
+    public List<Product> getProductsByName(Connection conn, String productName) {
+        List<Product> products = new ArrayList<>();
+
+        String query = String.format("""
+                    SELECT * FROM %s WHERE name = ?
+                """, TABLE_NAME);
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, productName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                products.add(
+                        new Product(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("category"),
+                                resultSet.getDouble("price"),
+                                resultSet.getInt("stock")
+                        )
+                );
+            }
+            System.out.printf("Данные успешно получены по имени из таблицы %s!\n", TABLE_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
+    public void updateCategory(Connection conn, String newCategory, String oldCategory) {
+        String query = String.format("UPDATE %s SET category = ? WHERE category = ?", TABLE_NAME);
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, newCategory);
+            preparedStatement.setString(2, oldCategory);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.printf("Данные были успешно обновлены в таблице %s\n", TABLE_NAME);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateProductPrice(Connection conn, String productName, Double newPrice) {
+        String query = String.format("UPDATE %s SET price = ? WHERE name = ?", TABLE_NAME);
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setDouble(1, newPrice);
+            preparedStatement.setString(2, productName);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.printf("Данные были успешно обновлены в таблице %s\n", TABLE_NAME);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProductByName(Connection conn, String productName) {
+        String query = String.format("DELETE FROM %s WHERE name = ?", TABLE_NAME);
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, productName);
+            int rowsDeleted = preparedStatement.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                System.out.printf("Данные были успешно удалены из таблицы %s!\n", TABLE_NAME);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package org.lessons.lesson1.databasebasics.example1.repository;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,8 +16,8 @@ public abstract class BaseRepository {
         statement.executeUpdate(query);
     }
 
-    protected void executeQuery(Connection connection, String query) throws SQLException {
+    protected ResultSet executeQuery(Connection connection, String query) throws SQLException {
         Statement statement = connection.createStatement();
-        statement.executeQuery(query);
+        return statement.executeQuery(query);
     }
 }

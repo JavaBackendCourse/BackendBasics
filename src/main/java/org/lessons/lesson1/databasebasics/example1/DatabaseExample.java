@@ -14,7 +14,39 @@ public class DatabaseExample {
         Connection conn = DbConfig.getConnection();
         createProductsTableIfNotExists(conn);
 //        insertProductsUnsafe(conn);
-        insertProductsSafe(conn);
+//        insertProductsSafe(conn);
+//        getAllProducts(conn);
+//        getProductsByName(conn, "Laptop");
+
+//        System.out.println("До обновления: ");
+//
+//        getAllProducts(conn);
+//
+//        updateCategory(conn, "Electronics and Tech", "Electronics");
+//
+//        System.out.println("После обновления: ");
+//
+//        getAllProducts(conn);
+
+//        System.out.println("До обновления: ");
+//
+//        getProductsByName(conn, "Laptop");
+//
+//        updatePrice(conn, "Laptop", 1300.00);
+//
+//        System.out.println("После обновления: ");
+//
+//        getProductsByName(conn, "Laptop");
+
+        System.out.println("До удаления: ");
+
+        getAllProducts(conn);
+
+        deleteProduct(conn, "Chair");
+
+        System.out.println("После удаления: ");
+
+        getAllProducts(conn);
     }
 
     private static void createProductsTableIfNotExists(Connection conn) {
@@ -39,5 +71,29 @@ public class DatabaseExample {
         );
 
         products.forEach(product -> productsRepository.addNewProductSafe(conn, product));
+    }
+
+    private static void getAllProducts(Connection conn) {
+        List<Product> products = productsRepository.getAllProducts(conn);
+
+        products.forEach(System.out::println);
+    }
+
+    private static void getProductsByName(Connection conn, String productName) {
+        List<Product> products = productsRepository.getProductsByName(conn, productName);
+
+        products.forEach(System.out::println);
+    }
+
+    private static void updateCategory(Connection conn, String newCategory, String oldCategory) {
+        productsRepository.updateCategory(conn, newCategory, oldCategory);
+    }
+
+    private static void updatePrice(Connection conn, String productName, Double newPrice) {
+        productsRepository.updateProductPrice(conn, productName, newPrice);
+    }
+
+    private static void deleteProduct(Connection conn, String productName) {
+        productsRepository.deleteProductByName(conn, productName);
     }
 }
