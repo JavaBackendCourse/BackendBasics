@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProductsRepository extends BaseRepository {
     private final String TABLE_NAME = "products";
@@ -119,6 +120,30 @@ public class ProductsRepository extends BaseRepository {
         }
 
         return products;
+    }
+
+    public Optional<Product> getProductById(Connection conn, Long id) {
+        String query = "SELECT * FROM products WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, id);
+            ResultSet resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                Product product = new Product(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("category"),
+                        resultSet.getDouble("price"),
+                        resultSet.getInt("stock")
+                );
+                return Optional.of(product);
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     public void updateCategory(Connection conn, String newCategory, String oldCategory) {

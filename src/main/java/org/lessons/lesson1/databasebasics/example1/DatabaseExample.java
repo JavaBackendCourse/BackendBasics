@@ -6,6 +6,7 @@ import org.lessons.lesson1.databasebasics.example1.repository.ProductsRepository
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Optional;
 
 public class DatabaseExample {
     private static final ProductsRepository productsRepository = new ProductsRepository();
@@ -47,6 +48,8 @@ public class DatabaseExample {
         System.out.println("После удаления: ");
 
         getAllProducts(conn);
+
+        getProductById(conn, 10L);
     }
 
     private static void createProductsTableIfNotExists(Connection conn) {
@@ -83,6 +86,15 @@ public class DatabaseExample {
         List<Product> products = productsRepository.getProductsByName(conn, productName);
 
         products.forEach(System.out::println);
+    }
+
+    private static void getProductById(Connection conn, Long id) {
+        Optional<Product> product = productsRepository.getProductById(conn, id);
+
+        if (product.isPresent())
+            System.out.println("Found product: " + product.get());
+        else
+            System.out.println("Product not found!");
     }
 
     private static void updateCategory(Connection conn, String newCategory, String oldCategory) {
